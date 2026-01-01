@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using practice.Data;
 using practice.DTOs;
 using practice.Models;
+using practice.Repository.Interface;
 
 namespace practice.Services
 {
@@ -9,17 +10,21 @@ namespace practice.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ITokenService _tokenService;
+        private readonly ICandidateRepository _repo_candidate;
+        private readonly IUserRepository _repo_user;
 
-        public AuthService(ApplicationDbContext context, ITokenService tokenService)
+        public AuthService(ApplicationDbContext context, ITokenService tokenService, IUserRepository userRepository,
+            ICandidateRepository candidateRepository)
         {
             _context = context;
             _tokenService = tokenService;
+            _repo_user = userRepository;
+            _repo_candidate = candidateRepository;
         }
 
         public async Task<LoginResponseDto?> LoginAsync(LoginDto loginDto)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginDto.Email && u.IsActive);
+            var user = await _repo_user.FindUser(loginDto.Email);
 
             if (user == null)
                 return null;
@@ -43,7 +48,7 @@ namespace practice.Services
         public async Task<bool> RegisterVoterAsync(RegisterVoterDto registerDto)
         {
             // Check if email already exists
-            if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
+            if (await _repo_user.checkEmailPreExisting(registerDto.Email))
                 return false;
 
             // Check if voter ID already exists
@@ -64,7 +69,7 @@ namespace practice.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.Users.Add(user);
+             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             return true;
