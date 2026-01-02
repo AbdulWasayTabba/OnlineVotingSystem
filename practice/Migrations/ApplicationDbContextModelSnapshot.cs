@@ -129,13 +129,13 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 21, 17, 3, 49, 226, DateTimeKind.Utc).AddTicks(9607),
+                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1262),
                             Description = "National General Election for selecting representatives",
                             ElectionType = "General",
-                            EndDate = new DateTime(2026, 1, 21, 17, 3, 49, 226, DateTimeKind.Utc).AddTicks(9576),
+                            EndDate = new DateTime(2026, 2, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1169),
                             IsActive = true,
                             ResultsPublished = false,
-                            StartDate = new DateTime(2025, 12, 21, 17, 3, 49, 226, DateTimeKind.Utc).AddTicks(9575),
+                            StartDate = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1167),
                             Title = "General Election 2024"
                         });
                 });
@@ -147,10 +147,6 @@ namespace practice.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AadharNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -192,6 +188,10 @@ namespace practice.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("cnic")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -207,12 +207,12 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 21, 17, 3, 49, 226, DateTimeKind.Utc).AddTicks(8483),
+                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 92, DateTimeKind.Utc).AddTicks(8547),
                             Email = "admin@votingsystem.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsVerified = true,
-                            PasswordHash = "$2a$11$M6Uxt9orbVd4nIppFUwduewAceJloUUQuw6E/yZbiab2ua5h8c/H2",
+                            PasswordHash = "$2a$11$vNUBiHQyg7ePeR6LfbpbH.zSo1oDa1.af9nfC2g18a.7cbH3Rwi9i",
                             PhoneNumber = "9999999999",
                             Role = "Admin"
                         });

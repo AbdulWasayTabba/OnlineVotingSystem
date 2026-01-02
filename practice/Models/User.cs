@@ -31,9 +31,9 @@ namespace practice.Models
         [StringLength(20)]
         public string Role { get; set; } = "Voter"; // Voter, Candidate, Admin
 
-        [StringLength(12)]
-        [RegularExpression(@"^\d{12}$", ErrorMessage = "Aadhar Number must be exactly 12 digits")]
-        public string? AadharNumber { get; set; }
+        [StringLength(13)]
+        [RegularExpression(@"^\d{13}$", ErrorMessage = "CNIC Number must be exactly 13 digits")]
+        public string? cnic { get; set; }
 
         [StringLength(20)]
         public string? VoterIdNumber { get; set; }

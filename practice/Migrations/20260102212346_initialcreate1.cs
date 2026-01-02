@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace practice.Migrations
 {
     /// <inheritdoc />
-    public partial class regexaddition : Migration
+    public partial class initialcreate1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,7 @@ namespace practice.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    AadharNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
+                    cnic = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
                     VoterIdNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
@@ -123,12 +123,12 @@ namespace practice.Migrations
             migrationBuilder.InsertData(
                 table: "Elections",
                 columns: new[] { "Id", "CreatedAt", "Description", "ElectionType", "EndDate", "IsActive", "ResultsPublished", "StartDate", "Title", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2025, 12, 21, 22, 41, 39, 674, DateTimeKind.Utc).AddTicks(8358), "National General Election for selecting representatives", "General", new DateTime(2026, 1, 21, 22, 41, 39, 674, DateTimeKind.Utc).AddTicks(8306), true, false, new DateTime(2025, 12, 21, 22, 41, 39, 674, DateTimeKind.Utc).AddTicks(8303), "General Election 2024", null });
+                values: new object[] { 1, new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1262), "National General Election for selecting representatives", "General", new DateTime(2026, 2, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1169), true, false, new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1167), "General Election 2024", null });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "AadharNumber", "CreatedAt", "Email", "FullName", "IsActive", "IsVerified", "PasswordHash", "PhoneNumber", "Role", "UpdatedAt", "VoterIdNumber" },
-                values: new object[] { 1, null, new DateTime(2025, 12, 21, 22, 41, 39, 672, DateTimeKind.Utc).AddTicks(1275), "admin@votingsystem.com", "System Administrator", true, true, "$2a$11$9.XIhR4O6l1/mENkUUoRi.lgr66Udjau/qyib.2oHsDWn6T4uusU2", "9999999999", "Admin", null, null });
+                columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "IsVerified", "PasswordHash", "PhoneNumber", "Role", "UpdatedAt", "VoterIdNumber", "cnic" },
+                values: new object[] { 1, new DateTime(2026, 1, 2, 21, 23, 44, 92, DateTimeKind.Utc).AddTicks(8547), "admin@votingsystem.com", "System Administrator", true, true, "$2a$11$vNUBiHQyg7ePeR6LfbpbH.zSo1oDa1.af9nfC2g18a.7cbH3Rwi9i", "9999999999", "Admin", null, null, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Candidates_UserId",
