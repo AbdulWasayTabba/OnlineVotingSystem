@@ -1,55 +1,40 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using practice.Data;
-using practice.DTOs;
 using practice.Models;
+using practice.Services;
 
 namespace practice.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAdminService _adminService;
+        private readonly IAuthService _authService;
 
-        public AdminController(ApplicationDbContext context)
+        // ? Constructor only injects Services
+        public AdminController(IAdminService adminService, IAuthService authService)
         {
-            _context = context;
+            _adminService = adminService;
+            _authService = authService;
         }
+
+        // ==========================================
+        // 1. DASHBOARD & USERS
+        // ==========================================
 
         // GET: Admin Dashboard
         public async Task<IActionResult> Dashboard()
         {
-            var totalVoters = await _context.Users.CountAsync(u => u.Role == "Voter");
-            var totalCandidates = await _context.Candidates.CountAsync();
-            var pendingVerifications = await _context.Users.CountAsync(u => !u.IsVerified);
-            var pendingApprovals = await _context.Candidates.CountAsync(c => !c.IsApproved);
-            var activeElections = await _context.Elections.CountAsync(e => e.IsActive);
-            var totalVotesCast = await _context.Votes.CountAsync();
+            var stats = await _adminService.GetDashboardStatsAsync();
 
-            ViewBag.TotalVoters = totalVoters;
-            ViewBag.TotalCandidates = totalCandidates;
-            ViewBag.PendingVerifications = pendingVerifications;
-            ViewBag.PendingApprovals = pendingApprovals;
-            ViewBag.ActiveElections = activeElections;
-            ViewBag.TotalVotesCast = totalVotesCast;
-
-            // Get recent registrations
-            var recentUsers = await _context.Users
-                .Where(u => !u.IsVerified)
-                .OrderByDescending(u => u.CreatedAt)
-                .Take(5)
-                .ToListAsync();
-
-            var recentCandidates = await _context.Candidates
-                .Include(c => c.User)
-                .Where(c => !c.IsApproved)
-                .OrderByDescending(c => c.RegisteredAt)
-                .Take(5)
-                .ToListAsync();
-
-            ViewBag.RecentUsers = recentUsers;
-            ViewBag.RecentCandidates = recentCandidates;
+            ViewBag.TotalVoters = stats.TotalVoters;
+            ViewBag.TotalCandidates = stats.TotalCandidates;
+            ViewBag.PendingVerifications = stats.PendingVerifications;
+            ViewBag.PendingApprovals = stats.PendingApprovals;
+            ViewBag.ActiveElections = stats.ActiveElections;
+            ViewBag.TotalVotesCast = stats.TotalVotesCast;
+            ViewBag.RecentUsers = stats.RecentUsers;
+            ViewBag.RecentCandidates = stats.RecentCandidates;
 
             return View();
         }
@@ -57,27 +42,19 @@ namespace practice.Controllers
         // GET: Manage Users
         public async Task<IActionResult> ManageUsers()
         {
-            var users = await _context.Users
-                .Where(u => u.Role != "Admin")
-                .OrderByDescending(u => u.CreatedAt)
-                .ToListAsync();
-
+            var users = await _adminService.GetAllUsersAsync();
             return View(users);
         }
 
-        // POST: Verify User
+        // POST: Verify User (Triggers Email via AuthService)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyUser(int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
-            {
-                user.IsVerified = true;
-                user.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"User {user.FullName} verified successfully.";
-            }
+            var success = await _authService.VerifyUserAsync(userId);
+
+            if (success) TempData["SuccessMessage"] = "User verified successfully. Email sent.";
+            else TempData["ErrorMessage"] = "Verification failed.";
 
             return RedirectToAction(nameof(ManageUsers));
         }
@@ -87,46 +64,34 @@ namespace practice.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeactivateUser(int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
-            {
-                user.IsActive = false;
-                user.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"User {user.FullName} deactivated successfully.";
-            }
+            var success = await _authService.DeactivateUserAsync(userId);
+
+            if (success) TempData["SuccessMessage"] = "User deactivated successfully.";
+            else TempData["ErrorMessage"] = "Deactivation failed.";
 
             return RedirectToAction(nameof(ManageUsers));
         }
 
+        // ==========================================
+        // 2. CANDIDATES
+        // ==========================================
+
         // GET: Manage Candidates
         public async Task<IActionResult> ManageCandidates()
         {
-            var candidates = await _context.Candidates
-                .Include(c => c.User)
-                .OrderByDescending(c => c.RegisteredAt)
-                .ToListAsync();
-
+            var candidates = await _adminService.GetAllCandidatesAsync();
             return View(candidates);
         }
 
-        // POST: Approve Candidate
+        // POST: Approve Candidate (Triggers Email via AuthService)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveCandidate(int candidateId)
         {
-            var candidate = await _context.Candidates
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == candidateId);
+            var success = await _authService.ApproveCandidateAsync(candidateId);
 
-            if (candidate != null)
-            {
-                candidate.IsApproved = true;
-                candidate.User.IsVerified = true;
-                candidate.User.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Candidate {candidate.User.FullName} approved successfully.";
-            }
+            if (success) TempData["SuccessMessage"] = "Candidate approved. Email sent.";
+            else TempData["ErrorMessage"] = "Approval failed.";
 
             return RedirectToAction(nameof(ManageCandidates));
         }
@@ -136,28 +101,22 @@ namespace practice.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RejectCandidate(int candidateId)
         {
-            var candidate = await _context.Candidates
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == candidateId);
+            var success = await _authService.RejectCandidateAsync(candidateId);
 
-            if (candidate != null)
-            {
-                candidate.User.IsActive = false;
-                candidate.User.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Candidate {candidate.User.FullName} rejected.";
-            }
+            if (success) TempData["SuccessMessage"] = "Candidate rejected.";
+            else TempData["ErrorMessage"] = "Rejection failed.";
 
             return RedirectToAction(nameof(ManageCandidates));
         }
 
+        // ==========================================
+        // 3. ELECTIONS
+        // ==========================================
+
         // GET: Manage Elections
         public async Task<IActionResult> ManageElections()
         {
-            var elections = await _context.Elections
-                .OrderByDescending(e => e.CreatedAt)
-                .ToListAsync();
-
+            var elections = await _adminService.GetAllElectionsAsync();
             return View(elections);
         }
 
@@ -174,13 +133,13 @@ namespace practice.Controllers
         {
             if (ModelState.IsValid)
             {
-                election.CreatedAt = DateTime.UtcNow;
-                _context.Elections.Add(election);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Election created successfully!";
-                return RedirectToAction(nameof(ManageElections));
+                var success = await _adminService.CreateElectionAsync(election);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Election created successfully!";
+                    return RedirectToAction(nameof(ManageElections));
+                }
             }
-
             return View(election);
         }
 
@@ -189,32 +148,23 @@ namespace practice.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PublishResults(int electionId)
         {
-            var election = await _context.Elections.FindAsync(electionId);
-            if (election != null)
-            {
-                election.ResultsPublished = true;
-                election.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Results for {election.Title} published successfully.";
-            }
+            var success = await _adminService.PublishElectionResultsAsync(electionId);
+
+            if (success) TempData["SuccessMessage"] = "Results published successfully.";
+            else TempData["ErrorMessage"] = "Failed to publish results.";
 
             return RedirectToAction(nameof(ManageElections));
         }
 
-        // POST: Toggle Election Status
+        // POST: Toggle Election Status (Activate/Deactivate)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleElectionStatus(int electionId)
         {
-            var election = await _context.Elections.FindAsync(electionId);
-            if (election != null)
-            {
-                election.IsActive = !election.IsActive;
-                election.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                var status = election.IsActive ? "activated" : "deactivated";
-                TempData["SuccessMessage"] = $"Election {election.Title} {status} successfully.";
-            }
+            var success = await _adminService.ToggleElectionStatusAsync(electionId);
+
+            if (success) TempData["SuccessMessage"] = "Election status updated.";
+            else TempData["ErrorMessage"] = "Failed to update status.";
 
             return RedirectToAction(nameof(ManageElections));
         }
@@ -222,35 +172,18 @@ namespace practice.Controllers
         // GET: View Results
         public async Task<IActionResult> ViewResults(int electionId)
         {
-            var election = await _context.Elections.FindAsync(electionId);
+            var election = await _adminService.GetElectionByIdAsync(electionId);
             if (election == null)
             {
                 TempData["ErrorMessage"] = "Election not found.";
                 return RedirectToAction(nameof(ManageElections));
             }
 
-            var totalVotes = await _context.Votes
-                .Where(v => v.ElectionId == electionId)
-                .CountAsync();
-
-            var results = await _context.Candidates
-                .Include(c => c.User)
-                .Include(c => c.Votes)
-                .Where(c => c.Votes.Any(v => v.ElectionId == electionId))
-                .Select(c => new VoteResultDto
-                {
-                    CandidateId = c.Id,
-                    CandidateName = c.User.FullName,
-                    PartyName = c.PartyName,
-                    PartySymbol = c.PartySymbol,
-                    TotalVotes = c.Votes.Count(v => v.ElectionId == electionId),
-                    VotePercentage = totalVotes > 0 ? (c.Votes.Count(v => v.ElectionId == electionId) * 100.0 / totalVotes) : 0
-                })
-                .OrderByDescending(r => r.TotalVotes)
-                .ToListAsync();
+            // Calls AdminService -> calls ElectionRepo -> calculates percentages
+            var results = await _adminService.GetElectionResultsAsync(electionId);
 
             ViewBag.Election = election;
-            ViewBag.TotalVotes = totalVotes;
+            ViewBag.TotalVotes = results.Sum(r => r.TotalVotes);
 
             return View(results);
         }

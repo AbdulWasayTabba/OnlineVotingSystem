@@ -207,6 +207,70 @@ namespace practice.Services
             }
             return IsUpdated;
         }
+
+
+        public async Task<bool> ApproveCandidateAsync(int candidateId)
+        {
+            // 1. Get Candidate
+            var candidate = await _repo_candidate.GetCandidateByIdAsync(candidateId);
+            if (candidate == null) return false;
+
+            // 2. Update Logic
+            candidate.IsApproved = true;
+            candidate.User.IsVerified = true; // Auto-verify the user account too
+            candidate.User.UpdatedAt = DateTime.UtcNow;
+
+            // 3. Save Changes
+            var isSaved = await _repo_candidate.UpdateCandidateAsync(candidate);
+
+            // 4. Send Email
+            if (isSaved)
+            {
+                var subject = "Candidacy Approved!";
+                var body = $"Hello {candidate.User.FullName},\n\n" +
+                           "Congratulations! Your application for candidacy has been APPROVED by the Admin.\n" +
+                           "You can now campaign for the upcoming election.";
+                try
+                {
+                    await _emailService.SendEmailAsync(candidate.User.Email, subject, body);
+                }
+                catch { }
+            }
+            return isSaved;
+        }
+
+        public async Task<bool> RejectCandidateAsync(int candidateId)
+        {
+            var candidate = await _repo_candidate.GetCandidateByIdAsync(candidateId);
+            if (candidate == null) return false;
+
+            // Logic: Maybe deactivate the user or just leave IsApproved = false
+            candidate.User.IsActive = false;
+
+            var isSaved = await _repo_candidate.UpdateCandidateAsync(candidate);
+
+            if (isSaved)
+            {
+                // Optional: Send Rejection Email
+                try
+                {
+                    await _emailService.SendEmailAsync(candidate.User.Email, "Application Update", "Your candidacy was not approved.");
+                }
+                catch { }
+            }
+            return isSaved;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userId)
+        {
+            var user = await _repo_user.FindUserViaId(userId);
+            if (user == null) return false;
+
+            user.IsActive = false;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            return await _repo_user.UpdateUserAsync(user);
+        }
     }
 }
 

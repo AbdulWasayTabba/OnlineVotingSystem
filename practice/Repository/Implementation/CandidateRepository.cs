@@ -1,4 +1,5 @@
-﻿using practice.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using practice.Data;
 using practice.Models;
 using practice.Repository.Interface;
 
@@ -39,6 +40,49 @@ namespace practice.Repository.Implementation
                 await transaction.RollbackAsync();
                 return false;
             }
+        }
+
+        //Admin Methods
+
+        // Implement the methods similar to UserRepository, using _context.Candidates
+        public async Task<int> GetTotalCandidatesCountAsync() => await _context.Candidates.CountAsync();
+
+        public async Task<int> GetPendingApprovalsCountAsync() => await _context.Candidates.CountAsync(c => !c.IsApproved);
+
+        public async Task<List<Candidate>> GetRecentPendingCandidatesAsync()
+        {
+            return await _context.Candidates.Include(c => c.User)
+                .Where(c => !c.IsApproved).OrderByDescending(c => c.RegisteredAt).Take(5).ToListAsync();
+        }
+
+        public async Task<List<Candidate>> GetAllCandidatesWithUsersAsync()
+        {
+            return await _context.Candidates.Include(c => c.User).OrderByDescending(c => c.RegisteredAt).ToListAsync();
+        }
+
+        public async Task<Candidate?> GetCandidateByIdAsync(int id)
+        {
+            return await _context.Candidates.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<bool> UpdateCandidateAsync(Candidate candidate)
+        {
+            _context.Candidates.Update(candidate);
+            return await _context.SaveChangesAsync() > 0;
+        }
+        public async Task<Candidate?> GetCandidateByUserIdAsync(int userId)
+        {
+            return await _context.Candidates
+                .Include(c => c.User)
+                .Include(c => c.Votes) // Important: Dashboard needs to count votes
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+        }
+        public async Task<List<Candidate>> GetApprovedCandidatesAsync()
+        {
+            return await _context.Candidates
+                .Include(c => c.User)
+                .Where(c => c.IsApproved)
+                .ToListAsync();
         }
     }
 }

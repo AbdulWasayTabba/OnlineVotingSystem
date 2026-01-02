@@ -82,5 +82,36 @@ namespace practice.Repository.Implementation
             // Save changes and return true if rows were affected
             return await _context.SaveChangesAsync() > 0;
         }
+
+
+        //Admin Methods
+
+        public async Task<int> GetTotalVotersCountAsync()
+        {
+            return await _context.Users.CountAsync(u => u.Role == "Voter");
+        }
+
+        public async Task<int> GetPendingVerificationsCountAsync()
+        {
+            return await _context.Users.CountAsync(u => !u.IsVerified);
+        }
+
+        public async Task<List<User>> GetRecentPendingUsersAsync()
+        {
+            return await _context.Users
+                .Where(u => !u.IsVerified)
+                .OrderByDescending(u => u.CreatedAt)
+                .Take(5)
+                .ToListAsync();
+        }
+
+
+        public async Task<List<User>> GetAllUsersExcludingAdminAsync()
+        {
+            return await _context.Users
+                .Where(u => u.Role != "Admin")
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

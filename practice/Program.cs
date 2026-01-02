@@ -62,12 +62,16 @@ builder.Services.AddAuthorization();
 // Register services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IVoterService, VoterService>();
+builder.Services.AddScoped<ICandidateService, CandidateService>();
 
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
 builder.Services.AddScoped<IVoterRepository, VoterRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 
 // Add session support

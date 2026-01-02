@@ -23,6 +23,13 @@ namespace practice.Repository.Interface
         public Task<bool> UpdateUserAsync(User user);
 
 
+        //Admin Methods
+
+        public Task<int> GetTotalVotersCountAsync();
+        public Task<int> GetPendingVerificationsCountAsync();
+        public Task<List<User>> GetRecentPendingUsersAsync();
+        public Task<List<User>> GetAllUsersExcludingAdminAsync();
+
 
 
     }
