@@ -12,8 +12,8 @@ using practice.Data;
 namespace practice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260102212346_initialcreate1")]
-    partial class initialcreate1
+    [Migration("20260103204125_cand-ele")]
+    partial class candele
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace practice.Migrations
                     b.Property<string>("Education")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
@@ -76,6 +79,8 @@ namespace practice.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ElectionId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -132,13 +137,13 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1262),
+                            CreatedAt = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1351),
                             Description = "National General Election for selecting representatives",
                             ElectionType = "General",
-                            EndDate = new DateTime(2026, 2, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1169),
+                            EndDate = new DateTime(2026, 2, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1318),
                             IsActive = true,
                             ResultsPublished = false,
-                            StartDate = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1167),
+                            StartDate = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1317),
                             Title = "General Election 2024"
                         });
                 });
@@ -192,8 +197,8 @@ namespace practice.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("cnic")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.HasKey("Id");
 
@@ -210,12 +215,12 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 92, DateTimeKind.Utc).AddTicks(8547),
+                            CreatedAt = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(374),
                             Email = "admin@votingsystem.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsVerified = true,
-                            PasswordHash = "$2a$11$vNUBiHQyg7ePeR6LfbpbH.zSo1oDa1.af9nfC2g18a.7cbH3Rwi9i",
+                            PasswordHash = "$2a$11$7mXMkFU8k/FpIatnZhb7TOte4U9EcbUtzRlay1.srLJeeiZ8LmG8G",
                             PhoneNumber = "9999999999",
                             Role = "Admin"
                         });
@@ -262,11 +267,19 @@ namespace practice.Migrations
 
             modelBuilder.Entity("practice.Models.Candidate", b =>
                 {
+                    b.HasOne("practice.Models.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("practice.Models.User", "User")
                         .WithOne("CandidateProfile")
                         .HasForeignKey("practice.Models.Candidate", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Election");
 
                     b.Navigation("User");
                 });

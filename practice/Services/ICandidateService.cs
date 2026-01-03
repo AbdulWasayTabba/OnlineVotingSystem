@@ -15,5 +15,7 @@ namespace practice.Services
 
         // Results: Returns Election, Results List, and MyVotes count
         Task<(Election? Election, List<VoteResultDto> Results, int MyVotes)> GetResultsAsync(int userId, int? electionId);
+        Task<bool> ParticipateInElectionAsync(int candidateId, int electionId);
+        Task<int> GetCandidateByUserIdServiceAsync(int userId);
     }
 }

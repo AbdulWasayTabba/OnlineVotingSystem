@@ -2,5 +2,7 @@
 {
     public interface IVoterRepository
     {
+        public Task<string> GetVoterNameByIdAsync(int voterId);
+        public Task<string> GetVoterEmailByIdAsync(int voterId);
     }
 }

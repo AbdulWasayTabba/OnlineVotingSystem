@@ -15,6 +15,7 @@ namespace practice.Controllers
 
         private readonly IElectionRepository _electionRepo;
 
+
         public VoterController(IVoterService voterService, IElectionRepository electionRepo)
         {
             _voterService = voterService;

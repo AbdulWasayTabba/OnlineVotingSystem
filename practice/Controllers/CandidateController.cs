@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using practice.DTOs;
+using practice.Models;
 using practice.Services;
 using System.Security.Claims;
 
@@ -84,6 +85,25 @@ namespace practice.Controllers
             ViewBag.MyVotes = myVotes;
 
             return View(results);
+        }
+        // POST: Participate in Election
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Participate(int electionId)
+        {
+            var userId = GetUserId();
+            var candidate = await _candidateService.GetCandidateByUserIdServiceAsync(userId);
+            bool participationResult = await _candidateService.ParticipateInElectionAsync(candidate, electionId);
+
+            if(participationResult)
+            {
+                TempData["SuccessMessage"] = "Successfully registered for the election.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to register for the election. You may already be registered.";
+            }
+            return RedirectToAction(nameof(Dashboard) );
         }
     }
 }
