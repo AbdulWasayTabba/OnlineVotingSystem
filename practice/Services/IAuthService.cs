@@ -10,5 +10,11 @@ namespace practice.Services
         Task<bool> RegisterCandidateAsync(RegisterCandidateDto registerDto);
         Task<User?> GetUserByEmailAsync(string email);
         Task<bool> VerifyUserAsync(int userId);
+
+
+        public Task<bool> ApproveCandidateAsync(int candidateId);
+
+        public Task<bool> RejectCandidateAsync(int candidateId);
+        public Task<bool> DeactivateUserAsync(int userId);
     }
 }

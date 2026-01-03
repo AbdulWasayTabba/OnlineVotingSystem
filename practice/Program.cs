@@ -2,8 +2,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using practice.Data;
+using practice.Models;
+using practice.Repository;
+using practice.Repository.Implementation;
+using practice.Repository.Interface;
 using practice.Services;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +62,17 @@ builder.Services.AddAuthorization();
 // Register services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IVoterService, VoterService>();
+builder.Services.AddScoped<ICandidateService, CandidateService>();
+
+builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
+builder.Services.AddScoped<IVoterRepository, VoterRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
+
+
 
 // Add session support
 builder.Services.AddSession(options =>
