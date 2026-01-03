@@ -22,9 +22,9 @@ namespace practice.DTOs
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(12)]
-        [RegularExpression(@"^\d{12}$", ErrorMessage = "Aadhar Number must be exactly 12 digits")]
-        public string AadharNumber { get; set; } = string.Empty;
+        [StringLength(13)]
+        [RegularExpression(@"^\d{13}$", ErrorMessage = "CNIC Number must be exactly 13 digits")]
+        public string cnic { get; set; } = string.Empty;
 
         [Required]
         [StringLength(20)]
@@ -55,8 +55,9 @@ namespace practice.DTOs
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(50)]
-        public string AadharNumber { get; set; } = string.Empty;
+        [StringLength(13)]
+        [RegularExpression(@"^\d{13}$", ErrorMessage = "CNIC Number must be exactly 13 digits")]
+        public string cnic { get; set; } = string.Empty;
 
         [Required]
         [StringLength(20)]

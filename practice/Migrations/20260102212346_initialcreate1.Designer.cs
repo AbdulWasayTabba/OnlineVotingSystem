@@ -12,8 +12,8 @@ using practice.Data;
 namespace practice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251221224824_FixUserConstraints")]
-    partial class FixUserConstraints
+    [Migration("20260102212346_initialcreate1")]
+    partial class initialcreate1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,13 +132,13 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 21, 22, 48, 24, 351, DateTimeKind.Utc).AddTicks(3574),
+                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1262),
                             Description = "National General Election for selecting representatives",
                             ElectionType = "General",
-                            EndDate = new DateTime(2026, 1, 21, 22, 48, 24, 351, DateTimeKind.Utc).AddTicks(3537),
+                            EndDate = new DateTime(2026, 2, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1169),
                             IsActive = true,
                             ResultsPublished = false,
-                            StartDate = new DateTime(2025, 12, 21, 22, 48, 24, 351, DateTimeKind.Utc).AddTicks(3535),
+                            StartDate = new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1167),
                             Title = "General Election 2024"
                         });
                 });
@@ -150,10 +150,6 @@ namespace practice.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AadharNumber")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -195,6 +191,10 @@ namespace practice.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("cnic")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -210,12 +210,12 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 21, 22, 48, 24, 351, DateTimeKind.Utc).AddTicks(2662),
+                            CreatedAt = new DateTime(2026, 1, 2, 21, 23, 44, 92, DateTimeKind.Utc).AddTicks(8547),
                             Email = "admin@votingsystem.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsVerified = true,
-                            PasswordHash = "$2a$11$g/UrwkCTPLsiYIYIHaCaV.Tp/0uSkOpB.I7zSD2dV/orTPBDlXake",
+                            PasswordHash = "$2a$11$vNUBiHQyg7ePeR6LfbpbH.zSo1oDa1.af9nfC2g18a.7cbH3Rwi9i",
                             PhoneNumber = "9999999999",
                             Role = "Admin"
                         });
