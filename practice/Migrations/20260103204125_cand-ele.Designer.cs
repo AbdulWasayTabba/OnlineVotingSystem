@@ -12,8 +12,8 @@ using practice.Data;
 namespace practice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260103172914_initial")]
-    partial class initial
+    [Migration("20260103204125_cand-ele")]
+    partial class candele
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace practice.Migrations
                     b.Property<string>("Education")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
@@ -76,6 +79,8 @@ namespace practice.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ElectionId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -132,13 +137,13 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 3, 17, 29, 13, 850, DateTimeKind.Utc).AddTicks(4842),
+                            CreatedAt = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1351),
                             Description = "National General Election for selecting representatives",
                             ElectionType = "General",
-                            EndDate = new DateTime(2026, 2, 3, 17, 29, 13, 850, DateTimeKind.Utc).AddTicks(4813),
+                            EndDate = new DateTime(2026, 2, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1318),
                             IsActive = true,
                             ResultsPublished = false,
-                            StartDate = new DateTime(2026, 1, 3, 17, 29, 13, 850, DateTimeKind.Utc).AddTicks(4813),
+                            StartDate = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1317),
                             Title = "General Election 2024"
                         });
                 });
@@ -210,12 +215,12 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 3, 17, 29, 13, 850, DateTimeKind.Utc).AddTicks(4159),
+                            CreatedAt = new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(374),
                             Email = "admin@votingsystem.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsVerified = true,
-                            PasswordHash = "$2a$11$PoYqum.Iy7mUSzwQe3gw.uMtoBeXFXzbrJHFhccGCqD9G.2UWty7q",
+                            PasswordHash = "$2a$11$7mXMkFU8k/FpIatnZhb7TOte4U9EcbUtzRlay1.srLJeeiZ8LmG8G",
                             PhoneNumber = "9999999999",
                             Role = "Admin"
                         });
@@ -262,11 +267,19 @@ namespace practice.Migrations
 
             modelBuilder.Entity("practice.Models.Candidate", b =>
                 {
+                    b.HasOne("practice.Models.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("practice.Models.User", "User")
                         .WithOne("CandidateProfile")
                         .HasForeignKey("practice.Models.Candidate", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Election");
 
                     b.Navigation("User");
                 });

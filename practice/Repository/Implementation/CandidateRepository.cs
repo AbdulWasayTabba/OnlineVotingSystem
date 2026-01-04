@@ -84,5 +84,44 @@ namespace practice.Repository.Implementation
                 .Where(c => c.IsApproved)
                 .ToListAsync();
         }
+        public async Task<bool> IsCandidateInElectionAsync(int candidateId, int electionId)
+        {
+            // Check if a candidate exists who matches BOTH the candidateId AND the electionId
+            var isValid = await _context.Candidates
+                .AnyAsync(c => c.Id == candidateId && c.ElectionId == electionId && c.IsApproved);
+
+            return isValid;
+        }
+        public async Task<bool> AddCandidateToElectionAsync(int candidateId, int electionId)
+        {
+            // 1. Find the existing candidate
+            var candidate = await _context.Candidates.FindAsync(candidateId);
+
+            // 2. Safety check: does the candidate exist?
+            if (candidate == null) return false;
+
+            // 3. Update the link
+            candidate.ElectionId = electionId;
+
+            // 4. Save the change (returns true if database was updated)
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+       
+        public async Task<int> GetCandidateIdByUserIdAsync(int id)
+        {
+           return await _context.Candidates
+                .Where(c => c.UserId == id)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Candidate>> AllCandidateInElectionAsync(int electionId)
+        {
+            return await _context.Candidates
+                .Include(c => c.User)
+                .Where(c => c.ElectionId == electionId && c.IsApproved)
+                .ToListAsync();
+        }
     }
 }

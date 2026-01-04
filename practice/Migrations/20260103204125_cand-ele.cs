@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace practice.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate1 : Migration
+    public partial class candele : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,7 @@ namespace practice.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    cnic = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
+                    cnic = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: true),
                     VoterIdNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
@@ -71,11 +71,18 @@ namespace practice.Migrations
                     ProfileImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     TotalVotes = table.Column<int>(type: "int", nullable: false),
                     IsApproved = table.Column<bool>(type: "bit", nullable: false),
-                    RegisteredAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    RegisteredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ElectionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Candidates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Candidates_Elections_ElectionId",
+                        column: x => x.ElectionId,
+                        principalTable: "Elections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Candidates_Users_UserId",
                         column: x => x.UserId,
@@ -123,12 +130,17 @@ namespace practice.Migrations
             migrationBuilder.InsertData(
                 table: "Elections",
                 columns: new[] { "Id", "CreatedAt", "Description", "ElectionType", "EndDate", "IsActive", "ResultsPublished", "StartDate", "Title", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1262), "National General Election for selecting representatives", "General", new DateTime(2026, 2, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1169), true, false, new DateTime(2026, 1, 2, 21, 23, 44, 93, DateTimeKind.Utc).AddTicks(1167), "General Election 2024", null });
+                values: new object[] { 1, new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1351), "National General Election for selecting representatives", "General", new DateTime(2026, 2, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1318), true, false, new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(1317), "General Election 2024", null });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "IsVerified", "PasswordHash", "PhoneNumber", "Role", "UpdatedAt", "VoterIdNumber", "cnic" },
-                values: new object[] { 1, new DateTime(2026, 1, 2, 21, 23, 44, 92, DateTimeKind.Utc).AddTicks(8547), "admin@votingsystem.com", "System Administrator", true, true, "$2a$11$vNUBiHQyg7ePeR6LfbpbH.zSo1oDa1.af9nfC2g18a.7cbH3Rwi9i", "9999999999", "Admin", null, null, null });
+                values: new object[] { 1, new DateTime(2026, 1, 3, 20, 41, 25, 126, DateTimeKind.Utc).AddTicks(374), "admin@votingsystem.com", "System Administrator", true, true, "$2a$11$7mXMkFU8k/FpIatnZhb7TOte4U9EcbUtzRlay1.srLJeeiZ8LmG8G", "9999999999", "Admin", null, null, null });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candidates_ElectionId",
+                table: "Candidates",
+                column: "ElectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Candidates_UserId",

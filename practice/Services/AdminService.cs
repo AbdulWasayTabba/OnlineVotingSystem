@@ -1,8 +1,9 @@
-﻿using practice.DTOs;
-using practice.Models;
-using practice.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using practice.Data; // Needed if we still use Context for Elections (or make an ElectionRepo)
+using practice.DTOs;
+using practice.Models;
+using practice.Repository.Implementation;
+using practice.Repository.Interface;
 
 namespace practice.Services
 {
@@ -63,6 +64,7 @@ namespace practice.Services
         public async Task<bool> CreateElectionAsync(Election election)
         {
             election.CreatedAt = DateTime.UtcNow;
+            if (election.CreatedAt > election.EndDate) return false;
             return await _electionRepo.AddElectionAsync(election);
         }
 
@@ -73,6 +75,15 @@ namespace practice.Services
 
             election.IsActive = !election.IsActive;
             election.UpdatedAt = DateTime.UtcNow;
+
+            var candidates = await _candidateRepo.AllCandidateInElectionAsync(electionId);
+
+            foreach (var candidate in candidates)
+            {
+                candidate.ElectionId = null;
+                await _candidateRepo.UpdateCandidateAsync(candidate);
+            }
+
             return await _electionRepo.UpdateElectionAsync(election);
         }
 
@@ -91,6 +102,16 @@ namespace practice.Services
             // This assumes you moved that complex query to ElectionRepository
             // If not, put the logic here calling _context or repositories
             return await _electionRepo.GetVoteResultsAsync(electionId);
+        }
+
+        public async Task<bool> UpdateElectionAsync(Election election)
+        {
+            return await _electionRepo.UpdateElectionAsync(election);
+        }
+
+        public async  Task<bool> DeleteElectionAsync(int id)
+        {
+            return await _electionRepo.DeleteElectionAsync(id);
         }
     }
 }

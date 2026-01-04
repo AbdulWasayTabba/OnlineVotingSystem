@@ -25,6 +25,8 @@ namespace practice.Models
         [StringLength(1000)]
         public string? Biography { get; set; }
 
+
+
         [StringLength(200)]
         public string? Education { get; set; }
 
@@ -43,5 +45,10 @@ namespace practice.Models
         // Navigation properties
         public virtual User User { get; set; } = null!;
         public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
+
+        [ForeignKey("Election")]
+        public int? ElectionId { get; set; }  // Links candidate to a specific election
+
+        public virtual Election? Election { get; set; } // Navigation property
     }
 }

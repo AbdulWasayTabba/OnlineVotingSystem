@@ -14,7 +14,10 @@ namespace practice.Services
             _candidateRepo = candidateRepo;
             _electionRepo = electionRepo;
         }
-
+        public async Task<int> GetCandidateByUserIdServiceAsync(int id)
+        {
+            return await _candidateRepo.GetCandidateIdByUserIdAsync(id);
+        }
         public async Task<CandidateDashboardDto?> GetDashboardAsync(int userId)
         {
             // 1. Get Candidate details
@@ -98,5 +101,35 @@ namespace practice.Services
 
             return (election, results, myVotes);
         }
+
+        public async Task<bool> ParticipateInElectionAsync(int candidateId, int electionId)
+        {
+            var candidate = await _candidateRepo.GetCandidateByIdAsync(candidateId);
+            if (candidate == null || !candidate.IsApproved) return false;
+
+            
+            if (candidate.ElectionId != null)
+            {
+                var currentElection = await _electionRepo.GetElectionByIdAsync(candidate.ElectionId.Value);
+
+                
+                if (currentElection != null && currentElection.EndDate > DateTime.UtcNow)
+                {
+                    return false;
+                }
+            }
+
+           
+            var newElection = await _electionRepo.GetElectionByIdAsync(electionId);
+            if (newElection == null || !newElection.IsActive) return false;
+
+           
+            if (candidate.ElectionId == electionId) return false;
+
+            
+            return await _candidateRepo.AddCandidateToElectionAsync(candidateId, electionId);
+        }
+
+
     }
 }

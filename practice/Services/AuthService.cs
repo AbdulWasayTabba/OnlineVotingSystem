@@ -133,7 +133,8 @@ namespace practice.Services
                 Education = registerDto.Education,
                 PreviousExperience = registerDto.PreviousExperience,
                 IsApproved = false, // Will be approved by admin
-                RegisteredAt = DateTime.UtcNow
+                RegisteredAt = DateTime.UtcNow,
+                Election = null
             };
 
 

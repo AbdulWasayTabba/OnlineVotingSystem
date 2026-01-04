@@ -66,9 +66,14 @@
 
                             <!-- Participate Button (No Logic Yet) -->
                             <div class="text-center mt-3">
-                                <button class="btn btn-success btn-lg px-5">
-                                    <i class="fas fa-user-plus me-2"></i>Participate
-                                </button>
+                                <form asp-action="Participate" asp-controller="Candidate" method="post">
+
+                                    <input type="hidden" name="electionId" value="@election.Id" />
+
+                                    <button type="submit" class="btn btn-success btn-lg px-5">
+                                        <i class="fas fa-user-plus me-2"></i>Participate
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -119,15 +124,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow border-0 mb-4">
-                <div class="card-body text-center py-4">
-                    <i class="fas fa-chart-line fa-4x text-success mb-3"></i>
-                    <h5 class="card-title">View Results</h5>
-                    <p class="text-muted">Check your performance</p>
-                    <a asp-action="Results" class="btn btn-outline-success"><i class="fas fa-chart-bar me-2"></i>View Results</a>
-                </div>
-            </div>
+      
 
             <div class="card shadow border-0">
                 <div class="card-body text-center py-4">

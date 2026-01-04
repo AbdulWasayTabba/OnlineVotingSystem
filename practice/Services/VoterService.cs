@@ -9,12 +9,16 @@ namespace practice.Services
         private readonly IUserRepository _userRepo;
         private readonly IElectionRepository _electionRepo;
         private readonly ICandidateRepository _candidateRepo;
+        private readonly IVoterRepository _voterRepo;
+        private readonly IEmailService _emailService;
 
-        public VoterService(IUserRepository userRepo, IElectionRepository electionRepo, ICandidateRepository candidateRepo)
+        public VoterService(IUserRepository userRepo, IElectionRepository electionRepo, ICandidateRepository candidateRepo , IVoterRepository voterRepo, IEmailService emailService)
         {
             _userRepo = userRepo;
             _electionRepo = electionRepo;
             _candidateRepo = candidateRepo;
+            _voterRepo = voterRepo;
+            _emailService = emailService;
         }
 
         public async Task<VoterDashboardDto?> GetDashboardAsync(int userId)
@@ -47,7 +51,7 @@ namespace practice.Services
                 return (null, new List<CandidateDto>()); // Or handle differently if you want specific error
 
             // 3. Get Candidates
-            var candidates = await _candidateRepo.GetApprovedCandidatesAsync();
+            var candidates = await _candidateRepo.AllCandidateInElectionAsync(electionId);
 
             var candidateDtos = candidates.Select(c => new CandidateDto
             {
@@ -92,8 +96,32 @@ namespace practice.Services
 
             // 5. Save (Transactional Save via Repo)
             var success = await _electionRepo.CastVoteAsync(vote, candidate);
+            if(!success)
+                return "An error occurred while recording your vote. Please try again.";
+            else
+            {
+                try
+                {
+                    // 1. Get the data FIRST (Await them here)
+                    var voterName = await _voterRepo.GetVoterNameByIdAsync(vote.VoterId);
+                    var voterEmail = await _voterRepo.GetVoterEmailByIdAsync(vote.VoterId);
 
-            return success ? "Success" : "Failed to record vote.";
+                    var subject = "Vote Casted Successfully"; // I updated the subject (it was "Registration Successful")
+
+                    var body = $"Hello {voterName},\n\n" +
+                               "Thank you for voting.\n" +
+                               "Your vote has been securely recorded on the Voting Portal.\n\n";
+
+                    // 2. Pass the actual string variables
+                    await _emailService.SendEmailAsync(voterEmail, subject, body);
+                }
+                catch
+                {
+                    // Email failed, but user is registered. We don't want to crash here.
+                }
+            }
+
+                return success ? "Success" : "Failed to record vote.";
         }
     }
 }

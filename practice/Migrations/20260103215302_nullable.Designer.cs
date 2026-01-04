@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using practice.Data;
 
@@ -11,9 +12,11 @@ using practice.Data;
 namespace practice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260103215302_nullable")]
+    partial class nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,13 +137,13 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 4, 14, 16, 24, 697, DateTimeKind.Utc).AddTicks(4572),
+                            CreatedAt = new DateTime(2026, 1, 3, 21, 53, 2, 452, DateTimeKind.Utc).AddTicks(9842),
                             Description = "National General Election for selecting representatives",
                             ElectionType = "General",
-                            EndDate = new DateTime(2026, 2, 4, 14, 16, 24, 697, DateTimeKind.Utc).AddTicks(4539),
+                            EndDate = new DateTime(2026, 2, 3, 21, 53, 2, 452, DateTimeKind.Utc).AddTicks(9809),
                             IsActive = true,
                             ResultsPublished = false,
-                            StartDate = new DateTime(2026, 1, 4, 14, 16, 24, 697, DateTimeKind.Utc).AddTicks(4538),
+                            StartDate = new DateTime(2026, 1, 3, 21, 53, 2, 452, DateTimeKind.Utc).AddTicks(9809),
                             Title = "General Election 2024"
                         });
                 });
@@ -212,12 +215,12 @@ namespace practice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 1, 4, 14, 16, 24, 697, DateTimeKind.Utc).AddTicks(3451),
+                            CreatedAt = new DateTime(2026, 1, 3, 21, 53, 2, 452, DateTimeKind.Utc).AddTicks(9176),
                             Email = "admin@votingsystem.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsVerified = true,
-                            PasswordHash = "$2a$11$4ALuvHO86P8KYBwStm4cz.plxQCC51UyTXnLLfxwFaxOhS6KCBFtK",
+                            PasswordHash = "$2a$11$s8WK4Z8q/CD4RHA.0xRFv.3NVi5J36C9PLy5Gkh.qNL4zVjpoUP/G",
                             PhoneNumber = "9999999999",
                             Role = "Admin"
                         });
