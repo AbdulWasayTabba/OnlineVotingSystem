@@ -34,6 +34,8 @@ namespace practice.DTOs
         public string? ProfileImageUrl { get; set; }
         public int TotalVotes { get; set; }
         public bool IsApproved { get; set; }
+
+        public int? ElectionId { get; set; }
     }
 
     public class ElectionDto

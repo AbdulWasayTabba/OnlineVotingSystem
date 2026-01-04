@@ -73,6 +73,15 @@ namespace practice.Services
 
             election.IsActive = !election.IsActive;
             election.UpdatedAt = DateTime.UtcNow;
+
+            var candidates = await _candidateRepo.AllCandidateInElectionAsync(electionId);
+
+            foreach (var candidate in candidates)
+            {
+                candidate.ElectionId = null;
+                await _candidateRepo.UpdateCandidateAsync(candidate);
+            }
+
             return await _electionRepo.UpdateElectionAsync(election);
         }
 
