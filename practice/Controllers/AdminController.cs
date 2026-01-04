@@ -257,7 +257,11 @@ namespace practice.Controllers
             ViewBag.Election = election;
             ViewBag.TotalVotes = results.Sum(r => r.TotalVotes);
 
+
+
             return View(results);
         }
+
+
     }
 }
