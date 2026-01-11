@@ -47,3 +47,9 @@ ii) dotnet run
 
 ---
 
+## Team Members
+
+- Muhammad Mustafa Giani
+- Muhammad Kumail Muhammad Ameen
+- Abdul Wasay Tabba
+- Abdul Rehman Waseem
