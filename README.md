@@ -52,4 +52,4 @@ ii) dotnet run
 - Muhammad Mustafa Giani
 - Muhammad Kumail Muhammad Ameen
 - Abdul Wasay Tabba
-- Abdul Rehman WaseeM
+- Abdul Rehman Waseem
