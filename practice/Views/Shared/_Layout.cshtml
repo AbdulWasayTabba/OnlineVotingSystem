@@ -31,16 +31,23 @@
             }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color:forestgreen">
-            <div class="container">
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-vote-yea me-2"></i>Online Voting System
+            <div class="container-fluid px-4 position-relative">
+
+                <a class="navbar-brand p-0">
+                    <img src="~/images/logo.png" alt="Logo" style="height: 50px; width: auto;"/>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+                <div class="position-absolute start-50 translate-middle-x text-white fw-bold fs-5 text-nowrap">
+                    <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none"> Online Voting System </a>
+                </div>
+
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity?.IsAuthenticated == true)
@@ -55,21 +62,7 @@
                                         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="ManageUsers">
-                                        <i class="fas fa-users me-1"></i>Manage Users
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="ManageCandidates">
-                                        <i class="fas fa-user-tie me-1"></i>Manage Candidates
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="ManageElections">
-                                        <i class="fas fa-poll me-1"></i>Manage Elections
-                                    </a>
-                                </li>
+
                             }
                             else if (role == "Voter")
                             {
@@ -96,7 +89,7 @@
                                         <i class="fas fa-user-edit me-1"></i>Edit Profile
                                     </a>
                                 </li>
-                               
+
                             }
 
                             <li class="nav-item dropdown">
@@ -138,7 +131,7 @@
         </nav>
     </header>
 
-    <div class="container-fluid px-0">
+    <div class="container-fluid px-0 flex-grow-1">
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
@@ -166,7 +159,7 @@
         </main>
     </div>
 
-    <footer class="bg-dark text-white mt-5 py-4">
+    <footer class="bg-dark text-white mt-auto py-4">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
@@ -186,6 +179,4 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-
-
 </html>

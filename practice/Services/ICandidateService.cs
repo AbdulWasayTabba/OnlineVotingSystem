@@ -17,5 +17,6 @@ namespace practice.Services
         Task<(Election? Election, List<VoteResultDto> Results, int MyVotes)> GetResultsAsync(int userId, int? electionId);
         Task<bool> ParticipateInElectionAsync(int candidateId, int electionId);
         Task<int> GetCandidateByUserIdServiceAsync(int userId);
+        
     }
 }

@@ -110,5 +110,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+// TEMP: Generate a hash to see it in the console
+Console.WriteLine("Generated Hash: " + BCrypt.Net.BCrypt.HashPassword("Pass@123"));
 
 app.Run();

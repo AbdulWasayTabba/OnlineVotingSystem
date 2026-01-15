@@ -117,5 +117,10 @@ namespace practice.Services
         {
             return await _electionRepo.DeleteElectionAsync(id);
         }
+
+        public Task<int> RemoveCandidatefromElectionAsync(int candidateId)
+        {
+            return _candidateRepo.RemoveCandidatefromElectionAsync(candidateId);
+        }
     }
 }

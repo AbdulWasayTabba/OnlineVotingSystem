@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using practice.Models;
 using practice.Services;
+using static System.Collections.Specialized.BitVector32;
 
 namespace practice.Controllers
 {
@@ -126,6 +127,7 @@ namespace practice.Controllers
         {
             return View();
         }
+
 
         // POST: Create Election
         [HttpPost]
@@ -261,7 +263,31 @@ namespace practice.Controllers
 
             return View(results);
         }
-
-
+        //Get Candidates for an Election
+        public async Task<IActionResult> ViewCandidates(int electionId)
+        {
+            var election = await _adminService.GetElectionByIdAsync(electionId);
+            if (election == null)
+            {
+                TempData["ErrorMessage"] = "Election not found.";
+                return RedirectToAction(nameof(ManageElections));
+            }
+            var candidates = await _adminService.GetAllCandidatesAsync();
+            var electionCandidates = candidates.Where(c => c.ElectionId == electionId).ToList();
+            ViewBag.Election = election;
+            return View(electionCandidates);
+        }
+        public async Task<IActionResult> RemoveCandidate(int candidateId)
+        {var candidate = await _adminService.RemoveCandidatefromElectionAsync(candidateId);
+            var electionId = candidate;
+            if (candidate==0)
+            {
+                TempData["ErrorMessage"] = "Candidate not found.";
+                return RedirectToAction(nameof(ManageElections));
+            }
+            return RedirectToAction(nameof(ViewCandidates), new {electionId});
+        }
+      
+       
     }
 }

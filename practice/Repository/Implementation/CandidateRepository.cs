@@ -5,7 +5,7 @@ using practice.Repository.Interface;
 
 namespace practice.Repository.Implementation
 {
-    public class CandidateRepository:ICandidateRepository
+    public class CandidateRepository : ICandidateRepository
     {
         private readonly ApplicationDbContext _context;
         public CandidateRepository(ApplicationDbContext context)
@@ -118,10 +118,10 @@ namespace practice.Repository.Implementation
 
         public async Task<int> GetCandidateIdByUserIdAsync(int id)
         {
-           return await _context.Candidates
-                .Where(c => c.UserId == id)
-                .Select(c => c.Id)
-                .FirstOrDefaultAsync();
+            return await _context.Candidates
+                 .Where(c => c.UserId == id)
+                 .Select(c => c.Id)
+                 .FirstOrDefaultAsync();
         }
 
         public async Task<List<Candidate>> AllCandidateInElectionAsync(int electionId)
@@ -143,6 +143,17 @@ namespace practice.Repository.Implementation
 
             // SaveChanges returns the number of rows affected
             return await _context.SaveChangesAsync() > 0;
+        }
+        public async Task<int> RemoveCandidatefromElectionAsync(int CandidateId)
+        {
+            var candidate = await _context.Candidates.FindAsync(CandidateId);
+            // Always check for null!
+            if (candidate == null) return 0;
+            int? newid = candidate.ElectionId;
+            candidate.ElectionId = null;
+            await _context.SaveChangesAsync();
+            // SaveChanges returns the number of rows affected
+            return (newid==null)?0:(int)newid;
         }
     }
 }

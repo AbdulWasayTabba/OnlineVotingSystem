@@ -7,7 +7,7 @@ namespace practice.Services
     {
         public Task<DashboardStatsDto> GetDashboardStatsAsync();
 
-
+        
         public Task<List<User>> GetAllUsersAsync();
 
         Task<bool> UpdateElectionAsync(Election election);
@@ -19,6 +19,7 @@ namespace practice.Services
         public Task<bool> CreateElectionAsync(Election election);
         public Task<bool> ToggleElectionStatusAsync(int electionId);
         public Task<bool> PublishElectionResultsAsync(int electionId);
+        public Task<int> RemoveCandidatefromElectionAsync(int candidateId);
 
         // Results (Moves that complex query out of Controller)
         public Task<List<VoteResultDto>> GetElectionResultsAsync(int electionId);
