@@ -135,13 +135,21 @@ namespace practice.Repository.Implementation
         public async Task<bool> RemoveCandidateAsync(int candidateId)
         {
             var candidate = await _context.Candidates.FindAsync(candidateId);
-
-            // Always check for null!
             if (candidate == null) return false;
+
+            // --- NEW CODE START ---
+            // Just like you did for Voters, we must find votes FOR this candidate
+            var candidateVotes = _context.Votes.Where(v => v.CandidateId == candidateId);
+
+            // And delete them first
+            if (candidateVotes.Any())
+            {
+                _context.Votes.RemoveRange(candidateVotes);
+            }
+            // --- NEW CODE END ---
 
             _context.Candidates.Remove(candidate);
 
-            // SaveChanges returns the number of rows affected
             return await _context.SaveChangesAsync() > 0;
         }
         public async Task<int> RemoveCandidatefromElectionAsync(int CandidateId)
