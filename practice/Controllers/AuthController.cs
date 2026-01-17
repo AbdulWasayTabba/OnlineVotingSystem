@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using practice.DTOs;
+using practice.Models;
 using practice.Services;
 
 namespace practice.Controllers
@@ -7,9 +8,11 @@ namespace practice.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly ICandidateService _candidateService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService,ICandidateService candidateService)
         {
+            _candidateService = candidateService;
             _authService = authService;
         }
 
@@ -76,6 +79,13 @@ namespace practice.Controllers
             TempData["SuccessMessage"] = $"Welcome back, {result.FullName}!";
 
             // 7. Redirect to the appropriate dashboard
+            if (result.Role == "Candidate")
+            {
+               
+                var candidate = await _candidateService.GetCandidateByUserIdServiceAsync(result.UserId);
+                bool status = await _candidateService.ChangeStatusaftertime(candidate);
+                
+            }
             return RedirectToDashboard(result.Role);
         }
         // GET: Voter Registration Page

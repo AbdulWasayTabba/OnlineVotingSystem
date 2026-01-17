@@ -30,6 +30,8 @@ namespace practice.Data
                 .HasForeignKey<Candidate>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            
+
             modelBuilder.Entity<Vote>()
                 .HasOne(v => v.Election)
                 .WithMany(e => e.Votes)

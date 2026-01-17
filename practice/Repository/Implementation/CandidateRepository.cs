@@ -155,5 +155,23 @@ namespace practice.Repository.Implementation
             // SaveChanges returns the number of rows affected
             return (newid==null)?0:(int)newid;
         }
+
+        public async Task<bool> ChangeStatusaftertime(int candidate)
+        {
+            var can = await _context.Candidates.FindAsync(candidate);
+            if(can.ElectionId.HasValue)
+            {
+                var election = await _context.Elections.FindAsync(can.ElectionId);
+                if(election.EndDate<DateTime.Now)
+                {
+                    can.ElectionId = null;
+                    await _context.SaveChangesAsync();
+                    election.IsActive = false;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

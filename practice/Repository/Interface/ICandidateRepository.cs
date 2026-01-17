@@ -9,6 +9,7 @@ namespace practice.Repository.Interface
         //Admin Methods
 
         public Task<int> GetTotalCandidatesCountAsync();
+        public Task<bool> ChangeStatusaftertime(int candidate);
         public Task<int> GetPendingApprovalsCountAsync();
         public Task<List<Candidate>> GetRecentPendingCandidatesAsync();
         public Task<List<Candidate>> GetAllCandidatesWithUsersAsync();

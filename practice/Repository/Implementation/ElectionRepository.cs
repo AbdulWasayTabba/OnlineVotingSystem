@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using practice.Data;
 using practice.DTOs;
 using practice.Models;
@@ -46,13 +47,26 @@ namespace practice.Repository.Implementation
         }
         public async Task<bool> DeleteElectionAsync(int id)
         {
+            // 1. Find all candidates linked to this election ID
+            // We look directly in the Candidates table because your Election model doesn't have the list.
+            var candidatesToDelete = _context.Candidates.Where(c => c.ElectionId == id);
+
+            // 2. Remove those candidates first
+            if (candidatesToDelete.Any())
+            {
+                _context.Candidates.RemoveRange(candidatesToDelete);
+            }
+
+            // 3. Now find the election
             var election = await _context.Elections.FindAsync(id);
             if (election == null) return false;
 
+            // 4. Delete the election (safe now because candidates are gone)
             _context.Elections.Remove(election);
+
+            // 5. Save everything
             return await _context.SaveChangesAsync() > 0;
         }
-
         public async Task<bool> UpdateElectionAsync(Election election)
         {
             _context.Elections.Update(election);

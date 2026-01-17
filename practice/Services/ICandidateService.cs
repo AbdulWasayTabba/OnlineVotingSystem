@@ -9,6 +9,7 @@ namespace practice.Services
 
         // Edit Profile: Gets data for the form
         Task<CandidateDto?> GetProfileForEditAsync(int userId);
+        Task<bool> ChangeStatusaftertime(int candidate);
 
         // Edit Profile: Saves the form
         Task<bool> UpdateProfileAsync(int userId, CandidateDto dto);

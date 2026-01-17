@@ -18,6 +18,10 @@ namespace practice.Services
         {
             return await _candidateRepo.GetCandidateIdByUserIdAsync(id);
         }
+        public async Task<bool> ChangeStatusaftertime(int candidate)
+        {
+            return await _candidateRepo.ChangeStatusaftertime(candidate);
+        }
         public async Task<CandidateDashboardDto?> GetDashboardAsync(int userId)
         {
             // 1. Get Candidate details

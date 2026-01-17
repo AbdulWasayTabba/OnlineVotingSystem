@@ -132,8 +132,37 @@ namespace practice.Controllers
         // POST: Create Election
         [HttpPost]
         [ValidateAntiForgeryToken]
+        // POST: Create Election
+        
         public async Task<IActionResult> CreateElection(Election election)
         {
+            // 1. Handle "Active Immediately" Logic
+            if (election.IsActive)
+            {
+                // Since the input was disabled, we manually set the StartDate to Now
+                election.StartDate = DateTime.UtcNow;
+
+                // IMPORTANT: We must remove the validation error that happened 
+                // because the disabled input sent no data.
+                ModelState.Remove("StartDate");
+            }
+            else
+            {
+                // 2. Handle Manual Start Date Validation
+                // Check if the user selected a date in the past
+                if (election.StartDate <= DateTime.UtcNow)
+                {
+                    ModelState.AddModelError("StartDate", "Start Date cannot be in the past.");
+                }
+            }
+
+            // 3. General Validation: Ensure EndDate is after StartDate
+            if (election.EndDate <= election.StartDate)
+            {
+                ModelState.AddModelError("EndDate", "End Date must be later than the Start Date.");
+            }
+
+            // 4. Check if model is valid after our manual adjustments
             if (ModelState.IsValid)
             {
                 var success = await _adminService.CreateElectionAsync(election);
@@ -147,6 +176,8 @@ namespace practice.Controllers
                     TempData["ErrorMessage"] = "Failed to create Election";
                 }
             }
+
+            // If we got here, something failed. Return view with errors.
             return View(election);
         }
         // ==========================================

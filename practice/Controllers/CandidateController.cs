@@ -94,6 +94,7 @@ namespace practice.Controllers
             var userId = GetUserId();
             var candidate = await _candidateService.GetCandidateByUserIdServiceAsync(userId);
             bool participationResult = await _candidateService.ParticipateInElectionAsync(candidate, electionId);
+           
 
             if(participationResult)
             {
