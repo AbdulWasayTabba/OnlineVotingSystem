@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Online Voting System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/practice.styles.css" asp-append-version="true" />
+    <style>
+        /* Force the Brand (Logo) to be bright white */
+        .navbar-dark .navbar-brand {
+            color: #ffffff !important;
+        }
+
+        /* Force all Navigation Links to be bright white */
+        .navbar-dark .navbar-nav .nav-link {
+            color: #ffffff !important;
+        }
+
+            /* Force the Dropdown Toggle (User Name) to be bright white */
+            .navbar-dark .navbar-nav .nav-link.dropdown-toggle {
+                color: #ffffff !important;
+            }
+
+            /* Optional: Add a slight hover effect (light grey) so users know it's clickable */
+            .navbar-dark .navbar-nav .nav-link:hover,
+            .navbar-dark .navbar-brand:hover {
+                color: #e0e0e0 !important;
+            }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color:forestgreen">
+            <div class="container-fluid px-4 position-relative">
+
+                @* --- DYNAMIC LINK LOGIC START --- *@
+                @{
+                    // Default to Home Page
+                    string brandController = "Home";
+                    string brandAction = "Index";
+                    var userRole = Context.Session.GetString("Role");
+
+                    // If logged in, redirect to specific dashboards
+                    if (User.Identity?.IsAuthenticated == true)
+                    {
+                        if (userRole == "Admin")
+                        {
+                            brandController = "Admin";
+                            brandAction = "Dashboard";
+                        }
+                        else if (userRole == "Voter")
+                        {
+                            brandController = "Voter";
+                            brandAction = "Dashboard";
+                        }
+                        else if (userRole == "Candidate")
+                        {
+                            brandController = "Candidate";
+                            brandAction = "Dashboard";
+                        }
+                    }
+                }
+                @* --- DYNAMIC LINK LOGIC END --- *@
+
+                @* 1. LOGO LINK (Dynamic) *@
+                <a class="navbar-brand p-0" asp-controller="@brandController" asp-action="@brandAction">
+                    <img src="~/images/logo.png" alt="Logo" style="height: 50px; width: auto;" />
+                </a>
+
+                @* 2. CENTER TITLE LINK (Dynamic) *@
+                <div class="position-absolute start-50 translate-middle-x text-white fw-bold fs-5 text-nowrap">
+                    <a asp-controller="@brandController" asp-action="@brandAction" class="text-white text-decoration-none">
+                        Online Voting System
+                    </a>
+                </div>
+
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var fullName = Context.Session.GetString("FullName") ?? "User";
+
+                            @if (userRole == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                    </a>
+                                </li>
+
+                            }
+                            else if (userRole == "Voter")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Voter" asp-action="Dashboard">
+                                        <i class="fas fa-home me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Voter" asp-action="Results">
+                                        <i class="fas fa-chart-bar me-1"></i>Results
+                                    </a>
+                                </li>
+                            }
+                            else if (userRole == "Candidate")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Candidate" asp-action="Dashboard">
+                                        <i class="fas fa-home me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Candidate" asp-action="EditProfile">
+                                        <i class="fas fa-user-edit me-1"></i>Edit Profile
+                                    </a>
+                                </li>
+
+                            }
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-1"></i>@fullName
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="VoterRegister">
+                                    <i class="fas fa-user-plus me-1"></i>Register as Voter
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="CandidateRegister">
+                                    <i class="fas fa-user-tie me-1"></i>Register as Candidate
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid px-0 flex-grow-1">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show m-3" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>@TempData["WarningMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <main role="main" class="pb-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="bg-dark text-white mt-auto py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-vote-yea me-2"></i>Online Voting System</h5>
+                    <p class="text-muted">Secure, transparent, and accessible digital voting platform</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2026 Online Voting System. All rights reserved.</p>
+                    <p class="text-muted mb-0">Powered by ASP.NET Core & JWT Authentication</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

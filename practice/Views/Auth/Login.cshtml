@@ -1,0 +1,79 @@
+@model practice.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5" >
+
+            <!-- ================= Login Card ================= -->
+            <div class="card shadow-lg border-0 rounded-lg" >
+
+                <!-- Card Header -->
+                <div class="card-header  text-white text-center py-4" style="background-color:forestgreen">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Voting System
+                    </h3>
+                </div>
+
+                <!-- Card Body: Login Form -->
+                <div class="card-body p-4">
+                    <form asp-action="Login" method="post">
+
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                       
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold">
+                                <i class="fas fa-envelope me-1"></i>Email Address
+                            </label>
+                            <input asp-for="Email" class="form-control form-control-lg" placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label fw-bold">
+                                <i class="fas fa-lock me-1"></i>Password
+                            </label>
+                            <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Enter your password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        
+                        <div class="d-grid" >
+                            <button type="submit" class="btn btn-primary btn-lg" style="background-color:forestgreen">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Card Footer: Registration Links -->
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-2">Don't have an account yet?</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a asp-action="VoterRegister" class="btn btn-outline-success">
+                            <i class="fas fa-user-plus me-1"></i>Register as Voter
+                        </a>
+                        <a asp-action="CandidateRegister" class="btn btn-outline-info">
+                            <i class="fas fa-user-tie me-1"></i>Register as Candidate
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= Validation Scripts ================= -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

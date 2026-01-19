@@ -1,0 +1,254 @@
+@model IEnumerable<practice.DTOs.VoteResultDto>
+@{
+    ViewData["Title"] = "View Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var election = ViewBag.Election as practice.Models.Election;
+    var totalVotes = (int)ViewBag.TotalVotes;
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card text-white shadow-lg border-0" style="background-color:forestgreen">
+                <div class="card-body py-4">
+                    <h2 class="mb-2">
+                        <i class="fas fa-chart-bar me-2"></i>Election Results (Admin View)
+                    </h2>
+                    <h4 class="mb-2">@election?.Title</h4>
+                    <p class="mb-0">@election?.Description</p>
+                    <div class="mt-3">
+                        <span class="badge bg-light text-dark fs-6">
+                            <i class="fas fa-vote-yea me-1"></i>Total Votes: @totalVotes
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <div class="card shadow-lg border-0 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-chart-bar me-2"></i>Vote Comparison</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-lg border-0 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-chart-pie me-2"></i>Vote Distribution</h5>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <div style="width: 100%; max-width: 300px;">
+                            <canvas id="doughnutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h4 class="mb-0">
+                            <i class="fas fa-trophy me-2"></i>Complete Results
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Candidate</th>
+                                        <th>Party</th>
+                                        <th class="text-center">Total Votes</th>
+                                        <th class="text-center">Vote %</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int rank = 1;
+                                        foreach (var result in Model)
+                                        {
+                                            var badgeClass = rank == 1 ? "bg-warning" : rank == 2 ? "bg-secondary" : rank == 3 ? "bg-danger" : "bg-info";
+                                            var iconClass = rank == 1 ? "fa-trophy" : rank == 2 ? "fa-medal" : rank == 3 ? "fa-award" : "fa-user";
+
+                                            <tr>
+                                                <td>
+                                                    <span class="badge @badgeClass fs-6">
+                                                        <i class="fas @iconClass me-1"></i>#@rank
+                                                    </span>
+                                                </td>
+                                                <td class="fw-bold">@result.CandidateName</td>
+                                                <td>
+                                                    <span class="text-muted">@result.PartyName</span>
+                                                    @if (!string.IsNullOrEmpty(result.PartySymbol))
+                                                    {
+                                                        <small class="badge bg-light text-dark ms-1">@result.PartySymbol</small>
+                                                    }
+                                                </td>
+                                                <td class="text-center">
+                                                    <strong class="fs-5 text-primary">@result.TotalVotes</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    <strong class="text-success">@result.VotePercentage.ToString("F2")%</strong>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 25px;">
+                                                        <div class="progress-bar @(rank == 1 ? "bg-success" : rank == 2 ? "bg-info" : "bg-secondary")"
+                                                             role="progressbar"
+                                                             style="width: @result.VotePercentage%"
+                                                             aria-valuenow="@result.VotePercentage"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100">
+                                                            @result.VotePercentage.ToString("F1")%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            rank++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        var winner = Model.FirstOrDefault();
+        if (winner != null)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-lg border" style="background-color:forestgreen">
+                        <div class="card-body text-center py-5">
+
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="rounded-circle overflow-hidden border border-4 border-warning shadow-lg position-relative d-flex align-items-center justify-content-center"
+                                     style="width: 160px; height: 160px; background-color: #fff;">
+
+                                    @if (!string.IsNullOrEmpty(winner.PhotoUrl))
+                                    {
+                                        <img src="@winner.PhotoUrl"
+                                             alt="Winner"
+                                             class="w-100 h-100"
+                                             style="object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-trophy fa-5x text-warning"></i>
+                                    }
+                                </div>
+                            </div>
+                            <h2 class="text-white mb-2">
+                                <i class="fas fa-crown me-2 text-warning"></i>Leading Candidate
+                            </h2>
+                            <h3 class="text-white fw-bold mb-1">@winner.CandidateName</h3>
+                            <p class="text-white-50 fs-5 mb-4">@winner.PartyName</p>
+
+                            <div class="d-inline-block bg-white rounded-pill px-5 py-3 shadow">
+                                <h4 class="text-primary mb-0 fw-bold">
+                                    <i class="fas fa-check-circle me-2"></i>@winner.TotalVotes Votes
+                                    <span class="ms-2 text-muted fw-normal" style="font-size: 0.8em;">(@winner.VotePercentage.ToString("F1")%)</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info shadow">
+            <h5 class="alert-heading">
+                <i class="fas fa-info-circle me-2"></i>No Results Available
+            </h5>
+            <p class="mb-0">No votes have been cast in this election yet.</p>
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <a asp-action="ManageElections" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>Back to Elections
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@if (Model != null && Model.Any())
+{
+    <script>
+        // 1. Prepare Data
+        var candidateNames = @Html.Raw(Json.Serialize(Model.Select(x => x.CandidateName)));
+        var voteCounts = @Html.Raw(Json.Serialize(Model.Select(x => x.TotalVotes)));
+
+        // Colors
+        var backgroundColors = [
+            'rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)'
+        ];
+
+        var borderColors = [
+            'rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)', 'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'
+        ];
+
+        // 2. Bar Chart
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: candidateNames,
+                datasets: [{
+                    label: 'Votes Received',
+                    data: voteCounts,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 3. Doughnut Chart
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: candidateNames,
+                datasets: [{
+                    data: voteCounts,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                }
+            }
+        });
+    </script>
+}
